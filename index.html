@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <!--Special fonts-->
+      <link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+      <link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+      <!--Local stylesheet-->
+      <link rel="stylesheet" href="styles/style.css">
+
+      <!-- jQuery library -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+      <!-- Latest compiled JavaScript -->
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      
+      <!--Local Javascript-->
+      <script src="scripts/index.js"></script>
+      <title>Chicago Bridge</title>
+      
+  </head>
+  <body style="background-color:linen;" onload="createGameGrid()">
+      <div class="container" id="bigdiv">
+          <div class="row" style="margin:2%;" > 
+              <div class="col-sm-12">
+                <h1 style="text-align:center;"> Chicago Bridge Scoring</h1>
+              </div>
+          </div>
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+         <ul class="nav navbar-nav">
+          <li><a style="cursor:pointer" onClick="location.reload(true)">Clear All</a></li>
+          <li><a style="cursor:pointer;color:red;" onClick="nuRound()" id="rndup" class="btn disabled">New Round</a></li>
+         </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a  href="#collhelp" data-toggle="collapse">Help</a>
+                  </li>
+              <li ><a href="https://drive.google.com/file/d/0B4MguglYwP4CTVN1aUJyX29BZUk/" target="_blank">Rules of Scoring</a>
+                </li>
+                
+         </ul>
+        </div>
+      </nav>
+      <div id="collhelp" class="collapse">   
+      <h1 style="text-align:center;">Version 2.0</h1>
+      
+      <p style="text-align:right;">04.02.2017</p>
+      <ul>
+       <li><strong>Insert names of players</strong> in provided spaces.  This is optional if only playing one round.  If playing more than one round, a cumulative score by player table is displayed and updated after each round if names are entered.</li>
+       <li>Vulnerability is automatically determined. Note that vulnerable player positions will show <span style="color:red;">red</span> in "Total Score" section. </li>
+       <li><code>Clear All</code> will reset the page and <em>all previous scoring is lost.</em></li>
+       <li><code>New Round</code> will show as red if disabled.  It will become enabled (white) at the end of a round.  Select to start new round.  It will clear the names and scores of players in "Total Score" section, create a new round and create/update score by player table.</li>
+       <li><code>Rules of Scoring</code> will give a description of scoring on a new page.</li>      
+      </ul>
+      <address>Problems, questions, comments: <a href="mailto:nfleisho@cox.net?Subject=ScorePad" target="_top">email</a></address>
+          </div> 
+          
+        <div class="row" id="summ"><h2>Game Summary:</h2></div>
+        <h2 id="scrHd">Total Score for Round</h2>   
+        <div class="row score" >
+        <div class="col-sm-3"><span id="North"><strong>North</strong></span><br/><input type="text" id="no" placeholder="Enter Player Name">
+            <div class="tot" id="totno"> 000</div>
+        </div>
+        <div class="col-sm-3"><span id="West"><strong>West</strong></span><br/><input type="text" id="we" placeholder="Enter Player Name">
+            <div class="tot" id="totwe"> 000</div>
+        </div>
+        <div class="col-sm-3"><span id="South"><strong>South</strong></span><br/><input type="text" id="so" placeholder="Enter Player Name">
+            <div class="tot" id="totso"> 000</div>
+        </div>
+        <div class="col-sm-3"><span id="East"><strong>East</strong></span><br/><input type="text" id="ea" placeholder="Enter Player Name"></div>
+          <div class="tot" id="totea"> 000</div>
+      </div>
+             <!--template for game grid-->
+      <div class="table-responsive" id="gametemp"; style="margin: 50px 0 0 0; display:none">
+      <table class="table">
+        <thead>
+        <tr> 
+        <th style="border:none;"></th>
+        <th style="border:none;"></th>
+        <th style="border:none;"></th>    
+        <th colspan="4" style="border:2px solid black;">Contract</th>
+        <th style="border:none;"></th>
+        <th style="border:none;"></th>     
+        </tr>
+        </thead>
+        <tr> 
+        <th style="border-top:2px solid black;border-left:2px solid black;">Game</th>
+        <th style="border-top:2px solid black;">Dealer</th>
+        <th style="border-top:2px solid black;"> Vulnerable</th>
+        <th>Declarer</th>
+        <th>Bid<br/> (above Book)</th>
+        <th>Suit</th>
+        <th>Dble/ReDbl?</th>
+        <th style="border-top:2px solid black;">Tricks Made</th>
+        <th style="border-top:2px solid black;">Game Score</th>
+          </tr>
+        <tbody>
+        <tr>
+        <td>AA</td>
+        <td>North</td>
+        <td>None</td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" id="decAA" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="North">North</option>
+                  <option value="West">West</option>
+                  <option value="South">South</option>
+                  <option value="East">East</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" id="bidAA" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select  class="form-control" id="suitAA" onchange="GamStrt()" > 
+                  <option value="def" selected>Choose:</option>
+                  <option value="clubs">&clubs;</option>
+                  <option value="diamonds">&diams;</option>
+                  <option value="hearts">&hearts;</option>
+                  <option value="spades">&spades;</option>
+                  <option value="No_Trump">No Trump</option>
+                </select>
+            </div>
+        </td>
+        <td>
+          <div class="form-group">
+                <select class="form-control" id="dblAA" onchange="GamStrt()"> 
+                  <option value="" selected>No</option>
+                  <option value="doubled">Double</option>
+                  <option value="redoubled">Redouble</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" id="madeAA" onchange="EndGame()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  
+                </select>
+            </div>
+        </td>
+        <td id="scrAA"></td>
+        </tr>
+        <tr>
+        <td>BB</td>
+        <td>West</td>
+        <td>Dealer</td>
+            <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="decBB" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="North">North</option>
+                  <option value="West">West</option>
+                  <option value="South">South</option>
+                  <option value="East">East</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="bidBB" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select  class="form-control" style="visibility:hidden;" id="suitBB" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="clubs">&clubs;</option>
+                  <option value="diamonds">&diams;</option>
+                  <option value="hearts">&hearts;</option>
+                  <option value="spades">&spades;</option>
+                  <option value="No_Trump">No Trump</option>
+                </select>
+            </div>
+        </td>
+        <td>
+          <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="dblBB" onchange="GamStrt()"> 
+                  <option value="" selected>No</option>
+                  <option value="doubled">Double</option>
+                  <option value="redoubled">Redouble</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select style="visibility:hidden;" class="form-control" id="madeBB" onchange="EndGame()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  
+                </select>
+            </div>
+        </td>
+        <td id="scrBB"></td>
+        </tr>
+        <tr>
+        <td>CC</td>
+        <td>South</td>
+        <td>Dealer</td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="decCC" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="North">North</option>
+                  <option value="West">West</option>
+                  <option value="South">South</option>
+                  <option value="East">East</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="bidCC" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select  class="form-control" style="visibility:hidden;" id="suitCC" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="clubs">&clubs;</option>
+                  <option value="diamonds">&diams;</option>
+                  <option value="hearts">&hearts;</option>
+                  <option value="spades">&spades;</option>
+                  <option value="No_Trump">No Trump</option>
+                </select>
+            </div>
+        </td>
+        <td>
+          <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="dblCC" onchange="GamStrt()"> 
+                  <option value="" selected>No</option>
+                  <option value="doubled">Double</option>
+                  <option value="redoubled">Redouble</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="madeCC" onchange="EndGame()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  
+                </select>
+            </div>
+        </td>
+        <td id="scrCC"></td>
+        </tr>
+        <tr>
+        <td>DD</td>
+        <td>East</td>
+        <td>All</td>
+            <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="decDD" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="North">North</option>
+                  <option value="West">West</option>
+                  <option value="South">South</option>
+                  <option value="East">East</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="bidDD" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select  class="form-control" style="visibility:hidden;" id="suitDD" onchange="GamStrt()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="clubs">&clubs;</option>
+                  <option value="diamonds">&diams;</option>
+                  <option value="hearts">&hearts;</option>
+                  <option value="spades">&spades;</option>
+                  <option value="No_Trump">No Trump</option>
+                </select>
+            </div>
+        </td>
+        <td>
+          <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="dblDD" onchange="GamStrt()"> 
+                  <option value="" selected>No</option>
+                  <option value="doubled">Double</option>
+                  <option value="redoubled">Redouble</option>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <select class="form-control" style="visibility:hidden;" id="madeDD" onchange="EndGame()"> 
+                  <option value="def" selected>Choose:</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  
+                </select>
+            </div>
+        </td>
+        <td id="scrDD"></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="row" id="playScrHead" style="display:none;">
+          <h2>Total Points By Player:</h2>
+      </div>
+      <div class="col-sm-6" id="playScrTab" style="display:none;">
+          <div class="table-responsive"  style="margin: 50px 0 0 0;">
+            <table class="table table-bordered" id="scrByPlay">
+              <thead>
+               <tr> 
+                <th>Player</th>
+                <th>Total Score</th>
+               </tr>
+           </thead>
+           <tbody id="playnScr">
+          </tbody>
+          </table>
+          </div>
+          </div></div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+.score {text-align:center; border: 2px solid black;}
+.tot {font-size: large; padding: 5px; }
+.table td {border: 2px solid black;}
+.table th {text-align: center; border: 2px solid black; }
+body {font-size: 160%;}
+#scrByPlay th {text-align: center; border: 2px solid black; }
